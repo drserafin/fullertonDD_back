@@ -10,12 +10,11 @@ const pool = new Pool({
     },
 
 });
-
 // logging a message when the connection is successful
 pool.on('connect', () => {
     console.log('connect to vercel database');
 });
 
-module.exports == ({
+module.exports = ({
     query: (text, params) => pool.query(text, params),
 });

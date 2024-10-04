@@ -1,23 +1,25 @@
 const express = require('express');
-const db = require('./config/database'); // Import the database connection
-
 const app = express();
-const port = process.env.PORT || 3000;
+const routes = require('./routes'); // Assuming you have routes in a separate file
+const { connnectToDataBase } = require('./config/database');
 
-app.get('/', (req, res) => {
-    res.send('Hello World');
-  });
+app.use(express.json()); // For parsing application/json
 
-// Test endpoint
-app.get('/api/test', (req, res) => {
-    res.json({ message: 'Hello, this is a test endpoint!' });
+// Use your routes
+app.use('/api', routes);
+
+// our root endpoint
+app.get('/', (res, req) =>{
+    res.send('Hello, World!');
 });
 
-
-
+// Handle 404 for unknown routes
+app.use((req, res) => {
+    res.status(404).send('404 - Not Found');
+});
 
 // Start the server
-app.listen(port, () => {
-    console.log(`Server running on port ${port}`);
-
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log(`Server is running on http://localhost:${PORT}`);
 });
