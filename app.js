@@ -1,7 +1,8 @@
 const express = require('express');
 const app = express();
+
 const routes = require('./routes'); // Assuming you have routes in a separate file
-const { connnectToDataBase } = require('./config/database');
+const { connectToDatabase } = require('./config/database');
 
 app.use(express.json()); // For parsing application/json
 
@@ -9,8 +10,8 @@ app.use(express.json()); // For parsing application/json
 app.use('/api', routes);
 
 // our root endpoint
-app.get('/', (res, req) =>{
-    res.send('Hello, World!');
+app.get('/', (req,res) => { // Remove req if not needed
+    res.send('Hello, World! My name is Kevin Serafin');
 });
 
 // Handle 404 for unknown routes

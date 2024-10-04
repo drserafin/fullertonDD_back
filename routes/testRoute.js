@@ -1,9 +1,14 @@
 const express = require('express');
 const router = express.Router();
-const db = require('../config/database'); // Adjust the path as necessary
+const db = require('../config/database');
 
-// A test route to check database connection
-router.get('/test-db', async (req, res) => {
+// URL : http://localhost:3000/api/test
+router.get('/', (req,res) => { // Remove req if not needed
+    res.send('Hello welcome to test route');
+});
+
+// URL : http://localhost:3000/api/test/db
+router.get('/db', async (req, res) => {
     try {
         const result = await db.query('SELECT NOW()'); // This will get the current timestamp
         res.json({

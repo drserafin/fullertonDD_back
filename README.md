@@ -13,7 +13,7 @@ This is the backend REST API for the fullerton DEAL DEPOT e-commerece platform. 
 ## Technologies used
 - Node.js
 - Express.js
-- SQLite
+- Postgresql with Vercel
 
 ## Project Structure
 * `controllers` : This folder is intended for our API logic
