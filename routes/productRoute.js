@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const db = require('../config/database'); // Uncomment this to use the database connection
+const db = require('../config/database');
 
 // Route to get all products
 router.get('/', async (req, res) => {
