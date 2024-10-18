@@ -2,6 +2,7 @@ const express = require('express');
 const app = express();
 const routes = require('./routes'); 
 const { connectToDatabase } = require('./config/database');
+const path = require('path');
 
 app.use(express.json());
 app.use('/api', routes);

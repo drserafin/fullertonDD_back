@@ -1,15 +1,18 @@
+// src/routes/productRoute.js
 const express = require('express');
-const router = express.Router();
-const Product = require('../models/productMode'); // Correctly importing the model
+const upload = require('../middleware/uploadMiddleware'); // Ensure this middleware is imported correctly
 const { getAllProducts, createProduct, searchProducts } = require('../controllers/productController');
 
-// Route to get all products
-router.get('/', getAllProducts); // Use the controller function instead of a raw SQL query
+const router = express.Router();
 
-// Define the search route
-router.get('/search', searchProducts); // Fix the spelling from 'serach' to 'search'
 
-// Route to add a new product
-router.post('/', createProduct); // Use the controller function to handle product creation
+
+router.get('/', (req,res) => { 
+    res.send('Hello welcome to product route');
+});
+router.post('/upload', upload.array('images', 5), createProduct);
+router.get('/search', searchProducts);
+
+
 
 module.exports = router;

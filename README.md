@@ -23,3 +23,15 @@ This is the backend REST API for the fullerton DEAL DEPOT e-commerece platform. 
 * `package.json`: This file contains metadata and dependencies for your project
 * `package-lock.json`: This file locks the versions of our dependencies
 * `server.js`: This is the main entry point for our API server
+
+
+To get started make sure to get all the dependencies by typing the following command 
+```
+npm i
+``````
+
+
+And to start server we type to following command
+```
+nodemon src/app.js
+``````

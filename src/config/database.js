@@ -1,21 +1,22 @@
-// Loads the environment variables from the .env file into process.env
+// config/db.js
 require('dotenv').config();
+const { Sequelize } = require('sequelize');
 
-// Importing the Pool class from the pg package
-const { Pool } = require('pg');
-
-const pool = new Pool({
-    connectionString: process.env.DATABASE_URL,
-    ssl: {
-        rejectUnauthorized: false
+// Initialize Sequelize with PostgreSQL connection
+const sequelize = new Sequelize(process.env.DATABASE_URL, {
+    dialect: 'postgres',
+    dialectOptions: {
+        ssl: {
+            require: true,
+            rejectUnauthorized: false // Allow SSL connections
+        }
     },
+    logging: false // Disable SQL logging in the console (optional)
 });
 
-// Logging a message when the connection is successful
-pool.on('connect', () => {
-    console.log('Connected to the database');
-});
+// Test connection
+sequelize.authenticate()
+    .then(() => console.log('Connected to the database successfully.'))
+    .catch(err => console.error('Unable to connect to the database:', err));
 
-module.exports = {
-    query: (text, params) => pool.query(text, params),
-};
+module.exports = sequelize;
