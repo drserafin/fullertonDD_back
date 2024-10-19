@@ -25,8 +25,10 @@ const createProduct = async (req, res) => {
         const { name, description, price, category, stock_quantity, available } = req.body;
 
         // Handle multiple image uploads
-        const imageUrls = req.files.map(file => `${req.protocol}://${req.get('host')}/uploads/${file.filename}`); // Full URL for uploaded files
 
+        const imageUrls = req.files.map(file => `/uploads/${file.filename}`);
+
+        console.log('Category:', category);  // Add this before creating the product
         // Create the product with image URLs
         const newProduct = await Product.create({
             name,
@@ -94,6 +96,35 @@ const uploadImage = async (req, res) => {
     }
 };
 
+const updateStockAndAvailability = async (productId, quantityPurchased) => {
+    try {
+        const product = await Product.findByPk(productId);
+
+        if (!product) {
+            throw new Error('Product not found');
+        }
+
+        if (product.stock_quantity >= quantityPurchased) {
+            // Update stock quantity
+            product.stock_quantity -= quantityPurchased;
+
+            // Update availability
+            product.available = product.stock_quantity > 0;
+
+            // Save the updated product
+            await product.save();
+            return { message: 'Purchase successful!', product };
+        } else {
+            return { message: 'Insufficient stock available.' };
+        }
+    } catch (error) {
+        console.error('Error updating stock:', error);
+        throw new Error('Failed to update stock');
+    }
+};
+
+
+
 // Function to resize the image
 const resizeImage = async (filePath) => {
     await sharp(filePath)
@@ -106,4 +137,5 @@ module.exports = {
     createProduct,
     searchProducts,
     uploadImage, // Ensure uploadImage is exported
+    updateStockAndAvailability,
 };
