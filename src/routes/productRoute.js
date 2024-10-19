@@ -1,12 +1,12 @@
 // src/routes/productRoute.js
 const express = require('express');
 const upload = require('../middleware/uploadMiddleware'); // Ensure this middleware is imported correctly
-const { getAllProducts, createProduct, searchProducts, updateStockAndAvailability } = require('../controllers/productController');
+const { getAllProducts,getOneProduct, createProduct, searchProducts, updateStockAndAvailability } = require('../controllers/productController');
 
 const router = express.Router();
 
 
-
+router.get('/getOne/:id', getOneProduct);
 router.get('/', (req,res) => { 
     res.send('Hello welcome to product route');
 });

@@ -123,6 +123,22 @@ const updateStockAndAvailability = async (productId, quantityPurchased) => {
     }
 };
 
+const getOneProduct = async (req, res) => {
+    const productId = req.params.id;
+    try {
+        const product = await Product.findByPk(productId);
+        if (product) {
+            res.status(200).json(product);
+        } else {
+            res.status(404).json({ message: 'Product not found' });
+        }
+    } catch (error) {
+        console.error('Error fetching product:', error);
+        res.status(500).send('Internal Server Error');
+    }
+};
+
+
 
 
 // Function to resize the image
@@ -138,4 +154,5 @@ module.exports = {
     searchProducts,
     uploadImage, // Ensure uploadImage is exported
     updateStockAndAvailability,
+    getOneProduct,
 };
