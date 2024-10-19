@@ -12,6 +12,7 @@ router.get('/', (req,res) => {
 });
 router.post('/upload', upload.array('images', 5), createProduct);
 router.get('/search', searchProducts);
+router.get('/getAll', getAllProducts)
 
 
 

@@ -25,7 +25,7 @@ const createProduct = async (req, res) => {
         const { name, description, price, category, stock_quantity, available } = req.body;
 
         // Handle multiple image uploads
-        const imageUrls = req.files.map(file => `/uploads/${file.filename}`); // Store paths for all uploaded files
+        const imageUrls = req.files.map(file => `${req.protocol}://${req.get('host')}/uploads/${file.filename}`); // Full URL for uploaded files
 
         // Create the product with image URLs
         const newProduct = await Product.create({
@@ -49,24 +49,39 @@ const createProduct = async (req, res) => {
     }
 };
 
-
-// Function to search products
+// Function to search products with query parameters
 const searchProducts = async (req, res) => {
     try {
-        const { query } = req.query;
+        const { name, category, minPrice, maxPrice } = req.query;
+
+        let searchConditions = {};
+        if (name) {
+            searchConditions.name = { [Op.iLike]: `%${name}%` };  // Case-insensitive search
+        }
+        if (category) {
+            searchConditions.category = category;
+        }
+        if (minPrice && maxPrice) {
+            searchConditions.price = { [Op.between]: [minPrice, maxPrice] };
+        }
+
+        console.log('Search Conditions:', searchConditions); // Log search conditions
+
         const products = await Product.findAll({
-            where: {
-                [Op.or]: [
-                    { name: { [Op.iLike]: `%${query}%` } },
-                    { description: { [Op.iLike]: `%${query}%` } },
-                ],
-            },
+            where: searchConditions
         });
-        res.json(products);
+
+        if (products.length > 0) {
+            res.status(200).json(products);
+        } else {
+            res.status(404).json({ message: 'No products found' });
+        }
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        console.error('Error searching products:', error);
+        res.status(500).json({ error: 'Server error' });
     }
 };
+
 
 // Function to upload and resize an image
 const uploadImage = async (req, res) => {

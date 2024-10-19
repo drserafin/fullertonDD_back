@@ -6,6 +6,7 @@ const path = require('path');
 
 app.use(express.json());
 app.use('/api', routes);
+app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
 app.get('/', (req,res) => { 
     res.send('Hello, World! My name is Kevin Serafin');
