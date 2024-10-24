@@ -1,9 +1,12 @@
-// config/db.js
+// config/database.js
 require('dotenv').config();
 const { Sequelize } = require('sequelize');
 
+// Log the database URL for debugging
+console.log('Database URL:', process.env.POSTGRES_URL);
+
 // Initialize Sequelize with PostgreSQL connection
-const sequelize = new Sequelize(process.env.DATABASE_URL, {
+const sequelize = new Sequelize(process.env.POSTGRES_URL, {
     dialect: 'postgres',
     dialectOptions: {
         ssl: {
