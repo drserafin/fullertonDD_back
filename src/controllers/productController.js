@@ -84,7 +84,6 @@ const searchProducts = async (req, res) => {
     }
 };
 
-
 // Function to upload and resize an image
 const uploadImage = async (req, res) => {
     try {
@@ -138,8 +137,22 @@ const getOneProduct = async (req, res) => {
     }
 };
 
+const listProductIdsAndNames = async (req, res) => {
+    try {
+        // Fetch all products, selecting only id and name
+        const products = await Product.findAll({
+            attributes: ['id', 'name'] // Select only the id and name columns
+        });
 
+        if (products.length === 0) {
+            return res.status(404).json({ message: 'No products found' });
+        }
 
+        res.status(200).json(products); // Return the list of product ids and names
+    } catch (error) {
+        res.status(500).json({ message: 'Failed to retrieve products', error: error.message });
+    }
+};
 
 // Function to resize the image
 const resizeImage = async (filePath) => {
@@ -148,11 +161,80 @@ const resizeImage = async (filePath) => {
         .toFile(path.join(__dirname, '../uploads', path.basename(filePath))); // Save resized image to the uploads folder
 };
 
+const deleteProductById = async (req, res) => {
+    console.log('Delete request received for ID:', req.params.id); // Debug log
+
+    const { id } = req.params; // Correctly get the id from req.params
+
+    try {
+        const product = await Product.findByPk(id); // Find the product by its ID
+
+        if (!product) {
+            return res.status(404).json({ message: 'Product not found' });
+        }
+
+        await product.destroy(); // Delete the product
+        res.status(200).json({ message: 'Product deleted successfully' });
+    } catch (error) {
+        console.error('Error deleting product:', error);
+        res.status(500).json({ message: 'Failed to delete product', error: error.message });
+    }
+};
+
+
+
+const updateProduct = async (req, res) => {
+    const { id } = req.params; // Get the product ID from the request parameters
+    const { name, description, price, category, stock_quantity, available } = req.body;
+    const images = req.files ? req.files.map(file => `/uploads/${file.filename}`) : null;
+
+    console.log('Updating product with ID:', id);
+    console.log('Incoming data:', req.body);
+    
+    try {
+        const product = await Product.findByPk(id); // Find the product by its ID
+        console.log('Found product:', product); // Log the found product
+
+        if (!product) {
+            return res.status(404).json({ message: 'Product not found' });
+        }
+
+        // Log current product details before making updates
+        console.log('Current product details:', product.toJSON());
+
+        // Update product details
+        product.name = name || product.name;
+        product.description = description || product.description;
+        product.price = price || product.price;
+        product.category = category || product.category;
+        product.stock_quantity = stock_quantity !== undefined ? stock_quantity : product.stock_quantity;
+        product.available = available !== undefined ? available : product.available;
+
+        // Update images if provided
+        if (images) {
+            // Concatenate existing images with new images
+            product.image_url = [...product.image_url, ...images]; // Ensure image_url can store multiple URLs
+        }
+
+        await product.save(); // Save the updated product
+
+        res.status(200).json({ message: 'Product updated successfully', product });
+    } catch (error) {
+        console.error('Error updating product:', error); // Log any errors
+        res.status(500).json({ message: 'Failed to update product', error: error.message });
+    }
+};
+
+
+
 module.exports = {
     getAllProducts,
     createProduct,
     searchProducts,
+    listProductIdsAndNames,
     uploadImage, // Ensure uploadImage is exported
     updateStockAndAvailability,
     getOneProduct,
+    deleteProductById,
+    updateProduct,
 };

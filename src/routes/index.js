@@ -11,4 +11,5 @@ const userRoute = require('./userRoute');
 router.use('/test', testRoute); // URL will be /api/test
 router.use('/products', productRoute); // URL will be /api/products
 
+
 module.exports = router; // Exporting the router
