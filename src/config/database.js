@@ -8,6 +8,7 @@ console.log('Database URL:', process.env.POSTGRES_URL);
 // Initialize Sequelize with PostgreSQL connection
 const sequelize = new Sequelize(process.env.POSTGRES_URL, {
     dialect: 'postgres',
+    dialectModule: require('pg'),
     dialectOptions: {
         ssl: {
             require: true,
