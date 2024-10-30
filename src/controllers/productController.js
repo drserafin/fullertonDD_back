@@ -1,7 +1,6 @@
 const Product = require('../models/productModel');
 const { Op } = require('sequelize');
-const sharp = require('sharp'); // Import sharp for image resizing
-const path = require('path'); // Import path to handle file paths
+const { uploadImageToS3, resizeAndUploadImage } = require('../utils/s3'); // Import functions from s3.js
 
 // Function to get all products
 const getAllProducts = async (req, res) => {
@@ -14,42 +13,36 @@ const getAllProducts = async (req, res) => {
     }
 };
 
-// Function to create a new product (with image upload logic)
 const createProduct = async (req, res) => {
+    console.log('Request body:', req.body); // Log the incoming request body
     try {
-        console.log('Upload route hit'); // Log when route is hit
-        console.log('Request body:', req.body); // Log request body for debugging
-        console.log('Uploaded files:', req.files); // Log uploaded files for debugging
-
-        // Extract product details from request body
         const { name, description, price, category, stock_quantity, available } = req.body;
 
-        // Handle multiple image uploads
+        // Check if images were uploaded
+        if (!req.body.images || req.body.images.length === 0) {
+            return res.status(400).json({ error: 'No images uploaded.' });
+        }
 
-        const imageUrls = req.files.map(file => `/uploads/${file.filename}`);
-
-        console.log('Category:', category);  // Add this before creating the product
-        // Create the product with image URLs
-        const newProduct = await Product.create({
+        // Create a new product instance
+        const product = await Product.create({
             name,
             description,
             price,
             category,
             stock_quantity,
-            available: available === 'true', // Handle boolean conversion
-            image_url: imageUrls // Correct variable name (imageUrls)
+            available,
+            image_url: req.body.images // Store all image URLs in the database
         });
 
-        // Respond with success message and new product details
-        res.status(201).json({
-            message: 'Product created successfully!',
-            product: newProduct
-        });
+        res.status(201).json(product);
     } catch (error) {
-        console.error('Error adding product:', error); // Log error for debugging
-        res.status(500).json({ message: 'Server error' });
+        console.error('Error adding product:', error.message); // Log the error message
+        console.error(error.stack); // Log the stack trace for more context
+        res.status(500).json({ message: 'Server error', error: error.message }); // Return the error message in response
     }
 };
+
+
 
 // Function to search products with query parameters
 const searchProducts = async (req, res) => {
@@ -154,53 +147,63 @@ const listProductIdsAndNames = async (req, res) => {
     }
 };
 
-// Function to resize the image
-const resizeImage = async (filePath) => {
-    await sharp(filePath)
-        .resize(1000, 1000) // Resize to 1000x1000 pixels
-        .toFile(path.join(__dirname, '../uploads', path.basename(filePath))); // Save resized image to the uploads folder
-};
-
-const deleteProductById = async (req, res) => {
-    console.log('Delete request received for ID:', req.params.id); // Debug log
-
-    const { id } = req.params; // Correctly get the id from req.params
+// Function to delete images from S3
+const deleteImageFromS3 = async (imageName) => {
+    const params = {
+        Bucket: 'fullerton-deal-depot-product-images', // Your S3 bucket name
+        Key: imageName.split('/').pop(), // Extract just the filename from the URL
+    };
 
     try {
-        const product = await Product.findByPk(id); // Find the product by its ID
+        await s3.deleteObject(params); // Delete the image from S3
+        console.log(`Deleted image: ${imageName}`);
+    } catch (error) {
+        console.error('Error deleting image from S3:', error);
+        throw new Error('Error deleting image from S3');
+    }
+};
 
+// Function to delete a product by ID and its associated images from S3
+const deleteProductById = async (req, res) => {
+    const productId = req.params.id;
+
+    try {
+        // Find the product by ID
+        const product = await Product.findByPk(productId);
         if (!product) {
             return res.status(404).json({ message: 'Product not found' });
         }
 
-        await product.destroy(); // Delete the product
-        res.status(200).json({ message: 'Product deleted successfully' });
+        // Get the list of image URLs from the product
+        const imageUrls = product.image_url; // Assuming `image_url` contains the array of image URLs
+
+        // Delete each image from S3
+        for (const imageUrl of imageUrls) {
+            await deleteImageFromS3(imageUrl);
+        }
+
+        // Delete the product from the database
+        await Product.destroy({ where: { id: productId } });
+
+        res.status(200).json({ message: 'Product and associated images deleted successfully' });
     } catch (error) {
         console.error('Error deleting product:', error);
-        res.status(500).json({ message: 'Failed to delete product', error: error.message });
+        res.status(500).json({ message: 'Error deleting product', error: error.message });
     }
 };
 
-
-
 const updateProduct = async (req, res) => {
-    const { id } = req.params; // Get the product ID from the request parameters
-    const { name, description, price, category, stock_quantity, available } = req.body;
-    const images = req.files ? req.files.map(file => `/uploads/${file.filename}`) : null;
+    const { id } = req.params;
+    const { name, description, price, category, stock_quantity, available, imageUrls } = req.body;
 
     console.log('Updating product with ID:', id);
     console.log('Incoming data:', req.body);
     
     try {
-        const product = await Product.findByPk(id); // Find the product by its ID
-        console.log('Found product:', product); // Log the found product
-
+        const product = await Product.findByPk(id);
         if (!product) {
             return res.status(404).json({ message: 'Product not found' });
         }
-
-        // Log current product details before making updates
-        console.log('Current product details:', product.toJSON());
 
         // Update product details
         product.name = name || product.name;
@@ -211,28 +214,25 @@ const updateProduct = async (req, res) => {
         product.available = available !== undefined ? available : product.available;
 
         // Update images if provided
-        if (images) {
-            // Concatenate existing images with new images
-            product.image_url = [...product.image_url, ...images]; // Ensure image_url can store multiple URLs
+        if (imageUrls && Array.isArray(imageUrls) && imageUrls.length > 0) {
+            product.image_url = imageUrls; // Replace existing image URLs
         }
 
         await product.save(); // Save the updated product
 
         res.status(200).json({ message: 'Product updated successfully', product });
     } catch (error) {
-        console.error('Error updating product:', error); // Log any errors
+        console.error('Error updating product:', error);
         res.status(500).json({ message: 'Failed to update product', error: error.message });
     }
 };
-
-
 
 module.exports = {
     getAllProducts,
     createProduct,
     searchProducts,
     listProductIdsAndNames,
-    uploadImage, // Ensure uploadImage is exported
+    uploadImage, 
     updateStockAndAvailability,
     getOneProduct,
     deleteProductById,

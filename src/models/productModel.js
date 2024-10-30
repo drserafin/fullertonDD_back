@@ -35,18 +35,6 @@ const Product = sequelize.define('Product', {
         allowNull: false,
         defaultValue: true,
     },
-    created_at: {
-        type: DataTypes.DATE,
-        allowNull: false,
-        defaultValue: DataTypes.NOW,
-        field: 'created_at', // Use the existing column name
-    },
-    updated_at: {
-        type: DataTypes.DATE,
-        allowNull: false,
-        defaultValue: DataTypes.NOW,
-        field: 'updated_at', // Use the existing column name
-    }
 }, {
     tableName: 'products',
     timestamps: true, // Enable automatic handling of createdAt and updatedAt fields

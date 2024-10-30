@@ -10,6 +10,7 @@ const userRoute = require('./userRoute');
 // Use your routes with a specific prefix
 router.use('/test', testRoute); // URL will be /api/test
 router.use('/products', productRoute); // URL will be /api/products
+router.use('/users', userRoute); // URL will be /api/users (if defined)
 
-
-module.exports = router; // Exporting the router
+// Export the router
+module.exports = router;
