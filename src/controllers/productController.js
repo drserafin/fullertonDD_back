@@ -1,6 +1,5 @@
 const Product = require('../models/productModel');
 const { Op } = require('sequelize');
-const { uploadImageToS3, resizeAndUploadImage } = require('../utils/s3'); // Import functions from s3.js
 
 // Function to get all products
 const getAllProducts = async (req, res) => {
@@ -42,8 +41,6 @@ const createProduct = async (req, res) => {
     }
 };
 
-
-
 // Function to search products with query parameters
 const searchProducts = async (req, res) => {
     try {
@@ -74,17 +71,6 @@ const searchProducts = async (req, res) => {
     } catch (error) {
         console.error('Error searching products:', error);
         res.status(500).json({ error: 'Server error' });
-    }
-};
-
-// Function to upload and resize an image
-const uploadImage = async (req, res) => {
-    try {
-        await resizeImage(req.file.path); // Call the resize function
-        res.status(201).json({ message: 'Image uploaded and resized successfully!' });
-    } catch (error) {
-        console.error('Error resizing image:', error);
-        res.status(500).json({ message: 'Error uploading image' });
     }
 };
 
@@ -232,7 +218,6 @@ module.exports = {
     createProduct,
     searchProducts,
     listProductIdsAndNames,
-    uploadImage, 
     updateStockAndAvailability,
     getOneProduct,
     deleteProductById,
