@@ -1,5 +1,5 @@
 const multer = require('multer');
-const { resizeAndUploadImage } = require('../utils/s3');
+const { resizeAndUploadImage } = require('../utils/imageUtil'); // Import the function from imageUtil
 
 // Configure multer to store uploaded files in memory
 const storage = multer.memoryStorage();
@@ -13,7 +13,8 @@ const handleImageUpload = async (req, res, next) => {
         const images = req.files; // Get the files from the request
 
         if (!images || images.length === 0) {
-            return res.status(400).json({ message: 'No images uploaded.' });
+            console.log("No images uploaded, proceeding without changes to images.");
+            return next(); // Proceed to the next middleware or route handler
         }
 
         const uploadedImageUrls = [];
@@ -21,12 +22,17 @@ const handleImageUpload = async (req, res, next) => {
 
         // Loop through each image, resize, and upload to S3
         for (const image of images) {
-            if (!uploadedFilenames.has(image.originalname)) {
-                const imageUrl = await resizeAndUploadImage(image.buffer, image.originalname, image.mimetype);
-                uploadedImageUrls.push(imageUrl); // Store the URL of the uploaded image
-                uploadedFilenames.add(image.originalname); // Mark this filename as uploaded
-            } else {
-                console.log(`Duplicate image detected: ${image.originalname}`);
+            try {
+                if (!uploadedFilenames.has(image.originalname)) {
+                    const imageUrl = await resizeAndUploadImage(image); // Pass the entire image object
+                    uploadedImageUrls.push(imageUrl); // Store the URL of the uploaded image
+                    uploadedFilenames.add(image.originalname); // Mark this filename as uploaded
+                } else {
+                    console.log(`Duplicate image detected: ${image.originalname}`);
+                }
+            } catch (imageError) {
+                console.error(`Error processing image ${image.originalname}:`, imageError);
+                return res.status(500).json({ message: `Failed to process image: ${image.originalname}`, error: imageError.message });
             }
         }
 

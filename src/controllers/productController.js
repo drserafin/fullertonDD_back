@@ -14,33 +14,36 @@ const getAllProducts = async (req, res) => {
 };
 
 const createProduct = async (req, res) => {
-    console.log('Request body:', req.body); // Log the incoming request body
+    const data = { ...req.body }; // Convert to a regular object
+  
+    console.log('Converted Request body:', data); // Log to check contents
+  
     try {
-        const { name, description, price, category, stock_quantity, available } = req.body;
-
-        // Check if images were uploaded
-        if (!req.body.images || req.body.images.length === 0) {
-            return res.status(400).json({ error: 'No images uploaded.' });
-        }
-
-        // Create a new product instance
-        const product = await Product.create({
-            name,
-            description,
-            price,
-            category,
-            stock_quantity,
-            available,
-            image_url: req.body.images // Store all image URLs in the database
-        });
-
-        res.status(201).json(product);
+      const { name, description, price, category, stock_quantity, available } = data;
+  
+      // Check if images were uploaded
+      if (!data.images || data.images.length === 0) {
+        return res.status(400).json({ error: 'No images uploaded.' });
+      }
+  
+      // Create a new product instance
+      const product = await Product.create({
+        name,
+        description,
+        price,
+        category,
+        stock_quantity,
+        available,
+        image_url: data.images, // Store all image URLs in the database
+      });
+  
+      res.status(201).json(product);
     } catch (error) {
-        console.error('Error adding product:', error.message); // Log the error message
-        console.error(error.stack); // Log the stack trace for more context
-        res.status(500).json({ message: 'Server error', error: error.message }); // Return the error message in response
+      console.error('Error adding product:', error.message); // Log the error message
+      console.error(error.stack); // Log the stack trace for more context
+      res.status(500).json({ message: 'Server error', error: error.message }); // Return the error message in response
     }
-};
+  };
 
 // Function to search products with query parameters
 const searchProducts = async (req, res) => {
@@ -180,39 +183,40 @@ const deleteProductById = async (req, res) => {
 };
 
 const updateProduct = async (req, res) => {
-    const { id } = req.params;
-    const { name, description, price, category, stock_quantity, available, imageUrls } = req.body;
+    const { id } = req.params;  
+    const { name, description, price, category, stock_quantity, available, imageUrls } = req.body;  
 
     console.log('Updating product with ID:', id);
     console.log('Incoming data:', req.body);
     
     try {
-        const product = await Product.findByPk(id);
+        const product = await Product.findByPk(id);  
         if (!product) {
-            return res.status(404).json({ message: 'Product not found' });
+            return res.status(404).json({ message: 'Product not found' });  
         }
 
-        // Update product details
-        product.name = name || product.name;
-        product.description = description || product.description;
-        product.price = price || product.price;
-        product.category = category || product.category;
-        product.stock_quantity = stock_quantity !== undefined ? stock_quantity : product.stock_quantity;
-        product.available = available !== undefined ? available : product.available;
+        // Update only the fields provided in the request
+        if (name) product.name = name;  
+        if (description) product.description = description;  
+        if (price) product.price = price;  
+        if (category) product.category = category;  
+        if (stock_quantity !== undefined) product.stock_quantity = stock_quantity;  
+        if (available !== undefined) product.available = available;  
 
-        // Update images if provided
+        // Check if imageUrls are provided and update only if they are
         if (imageUrls && Array.isArray(imageUrls) && imageUrls.length > 0) {
-            product.image_url = imageUrls; // Replace existing image URLs
+            product.image_url = imageUrls;  
         }
 
-        await product.save(); // Save the updated product
+        await product.save();  
 
-        res.status(200).json({ message: 'Product updated successfully', product });
+        res.status(200).json({ message: 'Product updated successfully', product });  
     } catch (error) {
-        console.error('Error updating product:', error);
-        res.status(500).json({ message: 'Failed to update product', error: error.message });
+        console.error('Error updating product:', error);  
+        res.status(500).json({ message: 'Failed to update product', error: error.message });  
     }
 };
+
 
 //const deletePromises = imageUrls.map(imageUrl => deleteImageFromS3(imageUrl));
 //await Promise.all(deletePromises);

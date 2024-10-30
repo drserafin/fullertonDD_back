@@ -14,15 +14,15 @@ const s3 = new S3({
 // Function to upload an image to S3
 const uploadImageToS3 = async (file) => {
     const params = {
-        Bucket: 'fullerton-deal-depot-product-images', // Your S3 bucket name
-        Key: Date.now() + path.extname(file.originalname), // Unique filename in S3
-        Body: file.buffer, // The file content
-        ContentType: file.mimetype, // File MIME type (e.g., image/jpeg)
+        Bucket: 'fullerton-deal-depot-product-images',
+        Key: Date.now() + path.extname(file.originalname),
+        Body: file.buffer,
+        ContentType: file.mimetype,
     };
 
     try {
         await s3.putObject(params);
-        return `https://${params.Bucket}.s3.${process.env.AWS_REGION}.amazonaws.com/${params.Key}`; // Construct URL
+        return `https://${params.Bucket}.s3.${process.env.AWS_REGION}.amazonaws.com/${params.Key}`;
     } catch (error) {
         console.error('Error uploading to S3:', error);
         throw new Error('Error uploading image');
@@ -32,7 +32,10 @@ const uploadImageToS3 = async (file) => {
 // Function to resize and upload images
 const resizeAndUploadImage = async (buffer, originalname, mimetype) => {
     const resizedBuffer = await sharp(buffer)
-        .resize(1000, 1000) // Resize to 1000x1000 pixels
+        .resize(1000, 1000, {
+            fit: 'contain',
+            background: { r: 255, g: 255, b: 255, alpha: 1 },
+        })
         .toBuffer();
 
     return await uploadImageToS3({ originalname, buffer: resizedBuffer, mimetype });
@@ -40,7 +43,7 @@ const resizeAndUploadImage = async (buffer, originalname, mimetype) => {
 
 // Export the S3 client and utility functions
 module.exports = {
-    s3, // Export the S3 client
+    s3,
     uploadImageToS3,
     resizeAndUploadImage,
 };
