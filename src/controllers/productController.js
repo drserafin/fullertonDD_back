@@ -1,5 +1,6 @@
 const Product = require('../models/productModel');
 const { Op } = require('sequelize');
+const { s3 } = require('../utils/s3'); // Adjust the path as necessary
 
 // Function to get all products
 const getAllProducts = async (req, res) => {
@@ -212,6 +213,13 @@ const updateProduct = async (req, res) => {
         res.status(500).json({ message: 'Failed to update product', error: error.message });
     }
 };
+
+//const deletePromises = imageUrls.map(imageUrl => deleteImageFromS3(imageUrl));
+//await Promise.all(deletePromises);
+/*
+While you're handling async functions properly, keep an eye on performance, especially if you're deleting multiple images. If possible, consider using Promise.all to delete multiple images concurrently, which can improve performance.
+*/
+
 
 module.exports = {
     getAllProducts,
