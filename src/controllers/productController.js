@@ -1,4 +1,4 @@
-const Product = require('../models/productModel');
+const Product = require('../models/products/Product');
 const { Op } = require('sequelize');
 const { s3 } = require('../utils/s3'); // Adjust the path as necessary
 
