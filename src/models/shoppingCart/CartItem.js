@@ -1,5 +1,5 @@
 const { DataTypes } = require('sequelize');
-const sequelize = require('../../config/database');
+const sequelize = require('../../config/database');  // Adjusting path to go two directories up
 
 const CartItem = sequelize.define('CartItem', {
   cart_item_id: {

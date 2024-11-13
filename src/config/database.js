@@ -18,7 +18,7 @@ const sequelize = new Sequelize(process.env.POSTGRES_URL, {
     logging: false // Disable SQL logging in the console (optional)
 });
 
-// Test connection
+// Test inconnection
 sequelize.authenticate()
     .then(() => console.log('Connected to the database successfully.'))
     .catch(err => console.error('Unable to connect to the database:', err));

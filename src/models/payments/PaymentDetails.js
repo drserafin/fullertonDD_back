@@ -1,6 +1,6 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../../config/database');  // Assuming your DB connection setup is here
-const Order = require('../shoppingCart/Order');  // Assuming you have an Order model
+const Order = require('../order/Order');  // Assuming you have an Order model
 
 const PaymentDetails = sequelize.define('PaymentDetails', {
     payment_id: {

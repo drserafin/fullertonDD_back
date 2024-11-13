@@ -1,5 +1,5 @@
 const { DataTypes } = require('sequelize');
-const sequelize = require('../config/database'); // Make sure to import your Sequelize instance
+const sequelize = require('../../config/database');  // Adjusting path to go two directories up
 
 // Define the UserPayment model
 const UserPayment = sequelize.define('UserPayment', {
