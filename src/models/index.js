@@ -13,7 +13,7 @@ const CartItem = require('./shoppingCart/CartItem');
 const Order = require('./order/Order');
 const OrderDetails = require('./order/OrderDetails');
 const OrderItem = require('./order/OrderItem');
-const ShoppingSession = require('./sessions/ShoppingSession');
+const ShoppingSession = require('./sessions/shoppingSession');
 
 // Define associations between models
 
@@ -34,12 +34,16 @@ User.hasMany(PaymentDetails, { foreignKey: 'userId', as: 'payments' });
 PaymentDetails.belongsTo(User, { foreignKey: 'userId', as: 'user' });
 
 // Order and TrackingDetail (Ensure unique aliases)
-Order.hasMany(TrackingDetail, { foreignKey: 'orderNo', as: 'orderTrackingDetails' });  // Changed alias to 'orderTrackingDetails'
-TrackingDetail.belongsTo(Order, { foreignKey: 'orderNo', as: 'orderDetails' });  // Changed alias to 'orderDetails'
+Order.hasMany(TrackingDetail, { foreignKey: 'orderNo', as: 'orderTrackingDetails' });
+TrackingDetail.belongsTo(Order, { foreignKey: 'orderNo', as: 'orderDetails' });
 
 // Cart and Product (Many-to-Many relationship via CartItem)
 Cart.belongsToMany(Product, { through: CartItem, foreignKey: 'cartId', as: 'products' });
 Product.belongsToMany(Cart, { through: CartItem, foreignKey: 'productId', as: 'carts' });
+
+// Cart and CartItem (One-to-Many relationship)
+Cart.hasMany(CartItem, { foreignKey: 'cartId', as: 'cartItems' });
+CartItem.belongsTo(Cart, { foreignKey: 'cartId', as: 'cart' });
 
 // Order and Product (Many-to-Many relationship via OrderItem)
 Order.belongsToMany(Product, { through: OrderItem, foreignKey: 'orderId', as: 'products' });
@@ -48,10 +52,6 @@ Product.belongsToMany(Order, { through: OrderItem, foreignKey: 'productId', as: 
 // Order and OrderDetails
 Order.hasMany(OrderDetails, { foreignKey: 'orderId', as: 'orderDetails' });
 OrderDetails.belongsTo(Order, { foreignKey: 'orderId', as: 'order' });
-
-// Cart and CartItem
-Cart.hasMany(CartItem, { foreignKey: 'cartId', as: 'cartItems' });
-CartItem.belongsTo(Cart, { foreignKey: 'cartId', as: 'cart' });
 
 // OrderItem and Order
 OrderItem.belongsTo(Order, { foreignKey: 'orderId', as: 'order' });

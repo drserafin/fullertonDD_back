@@ -1,0 +1,20 @@
+// middleware/generateCartId.js
+function generateCartId() {
+    return Math.floor(Math.random() * 1000000);  // Random cart ID
+  }
+  
+  // Middleware to check for cartId and create one if it doesn't exist
+  function checkCartId(req, res, next) {
+    let cartId = req.cookies.cartId;
+    
+    if (!cartId) {
+      cartId = generateCartId();  // Generate new cartId if none exists
+      res.cookie('cartId', cartId, { httpOnly: true, maxAge: 86400000 }); // Set cookie for 1 day
+    }
+  
+    req.cartId = cartId;  // Attach cartId to the request object
+    next();
+  }
+  
+  module.exports = checkCartId;
+  

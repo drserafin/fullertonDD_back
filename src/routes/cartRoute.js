@@ -2,19 +2,19 @@ const express = require('express');
 const router = express.Router();
 const cartController = require('../controllers/cartController');
 
-// Get all carts
-router.get('/', cartController.getAllCarts);
+// Cart-level routes
 
-// Get cart for a specific user
-router.get('/:userId', cartController.getCartByUser);
+// Get cart by user ID
+router.get('/:cartId', cartController.getCartByUser);
 
 // Create a new cart
 router.post('/', cartController.createCart);
 
-// Update a cart (e.g., add/remove products)
-router.put('/:cartId', cartController.updateCart);
-
 // Delete a cart
 router.delete('/:cartId', cartController.deleteCart);
+
+router.get('/', (req, res) => { 
+    res.send('Hello welcome cart route');
+});
 
 module.exports = router;

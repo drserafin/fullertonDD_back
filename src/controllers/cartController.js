@@ -1,29 +1,23 @@
-const { Cart, Product } = require('../models');
-
-// Get all carts
-const getAllCarts = async (req, res) => {
-  try {
-    const carts = await Cart.findAll();
-    res.json(carts);
-  } catch (err) {
-    res.status(500).json({ message: 'Error retrieving carts', error: err });
-  }
-};
+// controllers/cartController.js
+const { Cart } = require('../models');
 
 // Get cart for a specific user
 const getCartByUser = async (req, res) => {
   try {
-    const cart = await Cart.findOne({ 
-      where: { userId: req.params.userId },
-      include: Product 
+    const cart = await Cart.findOne({
+      where: { userId: req.params.userId }, // or use cartId if provided in the URL
+      include: 'CartItems', // Include the associated CartItems
     });
+    if (!cart) {
+      return res.status(404).json({ message: 'Cart not found' });
+    }
     res.json(cart);
   } catch (err) {
-    res.status(500).json({ message: 'Error retrieving cart for user', error: err });
+    res.status(500).json({ message: 'Error retrieving cart', error: err });
   }
 };
 
-// Create a new cart
+// Create a new cart (for a non-logged-in user or new user)
 const createCart = async (req, res) => {
   try {
     const newCart = await Cart.create(req.body);
@@ -33,23 +27,12 @@ const createCart = async (req, res) => {
   }
 };
 
-// Update a cart (e.g., add/remove products)
-const updateCart = async (req, res) => {
-  try {
-    const updated = await Cart.update(req.body, { where: { cartId: req.params.cartId } });
-    if (updated[0] === 0) {
-      return res.status(404).json({ message: 'Cart not found' });
-    }
-    res.json({ message: 'Cart updated successfully' });
-  } catch (err) {
-    res.status(500).json({ message: 'Error updating cart', error: err });
-  }
-};
-
-// Delete a cart
+// Delete a cart (usually when a user logs out or abandons the cart)
 const deleteCart = async (req, res) => {
   try {
-    const deleted = await Cart.destroy({ where: { cartId: req.params.cartId } });
+    const deleted = await Cart.destroy({
+      where: { cartId: req.params.cartId },
+    });
     if (!deleted) {
       return res.status(404).json({ message: 'Cart not found' });
     }
@@ -60,9 +43,7 @@ const deleteCart = async (req, res) => {
 };
 
 module.exports = {
-  getAllCarts,
   getCartByUser,
   createCart,
-  updateCart,
-  deleteCart
+  deleteCart,
 };
