@@ -61,10 +61,14 @@ Order.hasMany(OrderItem, { foreignKey: 'orderId', as: 'orderItems' });
 ShoppingSession.belongsTo(User, { foreignKey: 'userId', as: 'user' });
 User.hasOne(ShoppingSession, { foreignKey: 'userId', as: 'shoppingSession' });
 
-// Sync models with the database (optional, typically done on startup)
-sequelize.sync({ alter: true })
-  .then(() => console.log('Database synced successfully'))
-  .catch((err) => console.log('Error syncing database:', err));
+
+// Sync only in non-test environments
+if (process.env.NODE_ENV !== 'test') {
+  sequelize.sync({ alter: true }) // Sync models with the database
+    .then(() => console.log('Database synced successfully'))
+    .catch((err) => console.log('Error syncing database:', err));
+}
+
 
 // Export the models and associations
 module.exports = {

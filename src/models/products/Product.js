@@ -41,7 +41,4 @@ const Product = sequelize.define('Product', {
   underscored: true,
 });
 
-// Define the association (product belongs to category)
-Product.belongsTo(ProdCategory, { foreignKey: 'category_id' }); // Foreign key in Product table
-
 module.exports = Product;

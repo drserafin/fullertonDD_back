@@ -36,6 +36,11 @@ app.use((req, res) => {
 
 // Start the server
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
+
+if (process.env.NODE_ENV !== 'test') {
+  app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
-});
+  });
+}
+
+module.exports = app; // Make sure to export the app for testing
