@@ -6,7 +6,7 @@ const { s3 } = require('../utils/s3'); // Adjust the path as necessary
 const getAllProducts = async (req, res) => {
     try {
         const products = await Product.findAll();
-        res.json(products);
+        res.status(200).json(products);  // Explicitly setting status 200
     } catch (error) {
         console.error('Error fetching products:', error);
         res.status(500).send('Internal Server Error, no products found');

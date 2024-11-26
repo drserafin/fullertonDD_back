@@ -21,7 +21,7 @@ const createTrackingDetail = async (req, res) => {
     const { orderNo, trackingNumber, status, location } = req.body;
 
     // Validate input
-    if (!orderNo || !trackingNumber || !status) {
+    if (!orderNo || !trackingNumber || !status || !location) { // Ensure location is also validated
       return res.status(400).json({ message: 'Missing required fields' });
     }
 
@@ -31,8 +31,8 @@ const createTrackingDetail = async (req, res) => {
       return res.status(404).json({ message: 'Order not found' });
     }
 
-    // Create the tracking detail
-    const newTrackingDetail = await TrackingDetail.create(req.body);
+    // Create the tracking detail, now including location
+    const newTrackingDetail = await TrackingDetail.create({ ...req.body, location }); // Pass location here
     res.status(201).json(newTrackingDetail);
   } catch (err) {
     res.status(500).json({ message: 'Error creating tracking detail', error: err });

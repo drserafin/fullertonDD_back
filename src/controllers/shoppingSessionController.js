@@ -1,10 +1,10 @@
 const { ShoppingSession, CartItem, Product } = require('../models');
 
 // Create a new shopping session
-exports.createSession = async (req, res) => {
+const createSession = async (req, res) => {
   try {
     // Generate a unique session token, you can use a UUID or a random string
-    const sessionToken = 'unique_token_here';  // Replace with actual token generation logic
+    const sessionToken = 'unique_token_here'; // Replace with actual token generation logic
     const session = await ShoppingSession.create({ session_token: sessionToken });
 
     res.status(201).json({ message: 'Shopping session created successfully', session });
@@ -14,10 +14,10 @@ exports.createSession = async (req, res) => {
 };
 
 // Get details of a shopping session (like items in the cart)
-exports.getSession = async (req, res) => {
+const getSession = async (req, res) => {
   try {
     const { sessionId } = req.params;
-    
+
     // Include CartItems and Product details in the response
     const session = await ShoppingSession.findByPk(sessionId, {
       include: {
@@ -38,7 +38,7 @@ exports.getSession = async (req, res) => {
 };
 
 // Add a product to the shopping session
-exports.addProductToSession = async (req, res) => {
+const addProductToSession = async (req, res) => {
   try {
     const { sessionId } = req.params;
     const { productId, quantity } = req.body;
@@ -59,7 +59,7 @@ exports.addProductToSession = async (req, res) => {
 };
 
 // Remove a product from the shopping session
-exports.removeProductFromSession = async (req, res) => {
+const removeProductFromSession = async (req, res) => {
   try {
     const { sessionId, productId } = req.params;
 
@@ -87,5 +87,5 @@ module.exports = {
   createSession,
   getSession,
   addProductToSession,
-  removeProductFromSession
+  removeProductFromSession,
 };

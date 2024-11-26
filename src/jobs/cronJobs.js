@@ -1,5 +1,5 @@
 const cron = require('node-cron');
-const { Cart, CartItem } = require('../models');  // Correct path from cronJobs.js
+const { Cart, Sequelize } = require('../models'); 
 
 // Cron job to run at midnight every day
 cron.schedule('0 0 * * *', async () => { // This runs at midnight every day

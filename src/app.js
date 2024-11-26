@@ -1,10 +1,8 @@
 const express = require('express');
 const app = express();
 const routes = require('./routes');
-const path = require('path');
 const cookieParser = require('cookie-parser'); // Import cookie-parser
 const checkCartId = require('./middleware/generateCartId'); // Import the checkCartId middleware
-const cronJobs = require('./jobs/cronJobs');  // Import your cron jobs here
 
 
 // Middleware to parse JSON

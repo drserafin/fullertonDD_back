@@ -1,6 +1,5 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../../config/database');
-const User = require('../users/User');  // Ensure this is correct
 const ShoppingSession = sequelize.define('ShoppingSession', {
     session_id: {
         type: DataTypes.INTEGER,

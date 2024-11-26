@@ -1,4 +1,4 @@
-const { Payment, User } = require('../models');
+const { Payment } = require('../models');  // Import Payment model
 
 // Get all payments
 const getAllPayments = async (req, res) => {

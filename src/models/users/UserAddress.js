@@ -1,6 +1,5 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../../config/database');  // Adjusting path to go two directories up
-const User = require('./User'); // Import the User model
 
 // Define the UserAddress model
 const UserAddress = sequelize.define('UserAddress', {

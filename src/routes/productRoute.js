@@ -5,7 +5,7 @@ const {
     getOneProduct, 
     createProduct, 
     searchProducts, 
-    updateStockAndAvailability,
+   // updateStockAndAvailability,
     listProductIdsAndNames, 
     deleteProductById,
     updateProduct 

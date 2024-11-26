@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const shoppingSessionController = require('../controllers/shoppingSessionController');
-const authMiddleware = require('../middleware/auth');  // If you use authentication
 
 // Create a shopping session (can be for guest or logged-in user)
 router.post('/create', shoppingSessionController.createSession);
