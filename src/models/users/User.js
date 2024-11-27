@@ -1,33 +1,33 @@
-const { DataTypes } = require('sequelize');
-const sequelize = require('../../config/database');  // Adjusting path to go two directories up
-const bcrypt = require('bcryptjs');  // Import bcrypt for password hashing
+const Sequelize = require('sequelize');
+const sequelize = require('../../config/database');
+const passwordUtil = require('../../utils/passwordUtil');  // Correct path to the passwordUtils file
 
 const User = sequelize.define('User', {
   user_id: {
-    type: DataTypes.INTEGER,
+    type: Sequelize.DataTypes.INTEGER,
     primaryKey: true,
     autoIncrement: true
   },
   username: {
-    type: DataTypes.STRING,
+    type: Sequelize.DataTypes.STRING,
     allowNull: false,
     validate: {
-      notEmpty: true,  // Ensures that the username is not empty
+      notEmpty: true,
     }
   },
   email: {
-    type: DataTypes.STRING,
+    type: Sequelize.DataTypes.STRING,
     allowNull: false,
     unique: true,
     validate: {
-      isEmail: true,  // Ensures that the email is in a valid email format
+      isEmail: true,
     }
   },
   password: {
-    type: DataTypes.STRING,
+    type: Sequelize.DataTypes.STRING,
     allowNull: false,
     validate: {
-      len: [6, 100],  // Password length validation (at least 6 characters)
+      len: [6, 100],
     }
   }
 }, {
@@ -36,18 +36,16 @@ const User = sequelize.define('User', {
   updatedAt: 'updated_at',
 });
 
-// Hash password before saving user instance
+// Hash password before saving user instance using passwordUtils
 User.beforeCreate(async (user) => {
   if (user.password) {
-    // Hash password using bcryptjs before saving
-    const hashedPassword = await bcrypt.hash(user.password, 10);
-    user.password = hashedPassword;
+    user.password = await passwordUtil.hashPassword(user.password);  // Use the hashPassword function from passwordUtils
   }
 });
 
-// Optional: Method to validate user password when logging in
-/* User.prototype.isValidPassword = async function (password) {
-  return await bcrypt.compare(password, this.password);
-}; */
+User.prototype.isValidPassword = async function (password) {
+  return await passwordUtil.comparePasswords(password, this.password);  // Use the comparePasswords function from passwordUtils
+};
 
+// Exporting as an object to match the import in controllers
 module.exports = User;

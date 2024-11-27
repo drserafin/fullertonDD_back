@@ -1,18 +1,38 @@
-const { User, Address, Payment } = require('../models/users/User');
+const  User = require('../models/users/User');
+const Address = require('../models/users/UserAddress');
+const Payment = require('../models/users/UserPayment');
+const sequelize = require('../config/database');   // Import the sequelize instance
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken'); // Used for generating JWT tokens
 
-// Register a new user
+
 const registerUser = async (req, res) => {
     try {
-        const { username, email, password } = req.body;
+        const { username, email, password } = req.body; // Corrected to req.body
+
+        // Check if all required fields are provided
+        if (!username || !email || !password) {
+            return res.status(400).json({ message: 'Username, email, and password are required' });
+        }
+
+        // Log to verify if the model is loaded correctly
+        console.log('User model:', User);
 
         // Hash password before saving to ensure it is stored securely
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        const newUser = await User.create({ username, email, password: hashedPassword });
+        // Using Sequelize's create method (recommended approach)
+        const newUser = await User.create({
+            username,
+            email,
+            password: hashedPassword
+        });
 
-        res.status(201).json({ message: 'User registered successfully', user: newUser });
+        // Send a response excluding the password from the response for security
+        res.status(201).json({ 
+            message: 'User registered successfully', 
+            user: { user_id: newUser.user_id, username: newUser.username, email: newUser.email } 
+        });
     } catch (error) {
         console.error('Error registering user:', error);
         res.status(500).json({ message: 'Error registering user', error });
@@ -24,6 +44,11 @@ const loginUser = async (req, res) => {
     try {
         const { email, password } = req.body;
 
+        // Check if email and password are provided
+        if (!email || !password) {
+            return res.status(400).json({ message: 'Email and password are required' });
+        }
+
         // Find user by email
         const user = await User.findOne({ where: { email } });
         if (!user) return res.status(404).json({ message: 'User not found' });
@@ -33,8 +58,9 @@ const loginUser = async (req, res) => {
         if (!isMatch) return res.status(400).json({ message: 'Invalid credentials' });
 
         // Generate a JWT token on successful login
-        const token = jwt.sign({ id: user.id, email: user.email }, process.env.JWT_SECRET, { expiresIn: '1h' });
+        const token = jwt.sign({ user_id: user.user_id, email: user.email }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
+        // Send the token to the user
         res.status(200).json({ message: 'Login successful', token });
     } catch (error) {
         console.error('Error logging in user:', error);
@@ -45,8 +71,9 @@ const loginUser = async (req, res) => {
 // Get user profile (protected route)
 const getUserProfile = async (req, res) => {
     try {
-        const userId = req.user.id; // Assuming the user ID is stored in the request after JWT verification
+        const userId = req.user.user_id; // Assuming the user ID is stored in the request after JWT verification
 
+        // Retrieve user data along with associated addresses and payments
         const user = await User.findByPk(userId, {
             include: [
                 { model: Address, as: 'addresses' },
@@ -64,9 +91,15 @@ const getUserProfile = async (req, res) => {
 // Update user profile (protected route)
 const updateUserProfile = async (req, res) => {
     try {
-        const userId = req.user.id; // Assuming the user ID is extracted from JWT
+        const userId = req.user.user_id; // Assuming the user ID is extracted from JWT
 
-        const updatedUser = await User.update(req.body, { where: { id: userId } });
+        // Ensure that there is data in the request body to update
+        if (Object.keys(req.body).length === 0) {
+            return res.status(400).json({ message: 'No data provided to update' });
+        }
+
+        // Update user profile
+        const updatedUser = await User.update(req.body, { where: { user_id: userId } });
 
         if (updatedUser[0] === 0) {
             return res.status(404).json({ message: 'User not found or no changes made' });
