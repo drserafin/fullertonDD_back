@@ -1,6 +1,5 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../../config/database');
-const { hashPassword, comparePasswords } = require('../../utils/passwordUtil');  // Correct path to the passwordUtils file
 
 const User = sequelize.define('User', {
   user_id: {
