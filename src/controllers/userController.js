@@ -1,7 +1,6 @@
 const  User = require('../models/users/User');
 const Address = require('../models/users/UserAddress');
 const Payment = require('../models/users/UserPayment');
-const sequelize = require('../config/database');   // Import the sequelize instance
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken'); // Used for generating JWT tokens
 
