@@ -4,5 +4,7 @@ const userController = require('../controllers/userController');
 
 // Register a new user (only email required)
 router.post('/login', userController.loginUser);
+router.get('/list', userController.getUsers);
+router.get('/token/:username', userController.getTokenByUsername);
 
 module.exports = router;

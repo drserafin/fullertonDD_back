@@ -40,7 +40,53 @@ const loginUser = async (req, res) => {
   }
 };
 
+const getUsers = async (req, res) => {
+    try {
+      // Retrieve all users from the database
+      const users = await User.findAll(); // Fetch all users
+  
+      // Check if users exist
+      if (!users || users.length === 0) {
+        return res.status(404).json({ message: 'No users found' });
+      }
+  
+      // Send the users list as a response
+      res.status(200).json({ users });
+    } catch (error) {
+      console.error('Error retrieving users:', error);
+      res.status(500).json({ message: 'Error retrieving users', error });
+    }
+  };
+  
+const getTokenByUsername = async (req, res) => {
+    try {
+      const { username } = req.params;
+  
+      // Find user by username
+      const user = await User.findOne({ where: { username } });
+  
+      if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+  
+      // Generate JWT token for the user
+      const token = jwt.sign(
+        { user_id: user.user_id, username: user.username },
+        process.env.JWT_SECRET,
+        { expiresIn: '1h' }
+      );
+  
+      // Send the token back to the client
+      res.status(200).json({ message: 'Token generated successfully', token });
+    } catch (error) {
+      console.error('Error generating token:', error);
+      res.status(500).json({ message: 'Error generating token', error });
+    }
+  };
+
 // Exporting all functions at the bottom
 module.exports = {
   loginUser,
+  getUsers,
+  getTokenByUsername,
 };
