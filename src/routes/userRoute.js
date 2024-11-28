@@ -3,6 +3,6 @@ const router = express.Router();
 const userController = require('../controllers/userController');
 
 // Register a new user (only email required)
-router.post('/register', userController.registerUser);
+router.post('/login', userController.loginUser);
 
 module.exports = router;
