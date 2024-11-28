@@ -1,66 +1,23 @@
 const User = require('../models/users/User');
 const jwt = require('jsonwebtoken'); // Used for generating JWT tokens
-const { OAuth2Client } = require('google-auth-library');
-
-const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
-
-const verifyGoogleToken = async (token) => {
-  const ticket = await client.verifyIdToken({
-    idToken: token,
-    audience: process.env.GOOGLE_CLIENT_ID, // Specify the same client ID used on the frontend
-  });
-  const payload = ticket.getPayload();
-  console.log(payload);
-  return payload; // Contains user information like email, name, etc.
-};
-
-// const registerUser = async (req, res) => {
-//     try {
-//         const { email } = req.body; // Only email is required, no username or password needed
-
-//         // Check if email is provided
-//         if (!email) {
-//             return res.status(400).json({ message: 'Email is required' });
-//         }
-
-//         // Check if the user already exists
-//         const existingUser = await User.findOne({ where: { email } });
-//         if (existingUser) {
-//             return res.status(409).json({ message: 'User already exists' });  // Using 409 for conflict
-//         }
-
-//         // Create new user with email and set username to email
-//         const newUser = await User.create({
-//             email,
-//             username: email // Set username as email
-//         });
-
-//         // Send a response with the user details (excluding sensitive data)
-//         res.status(201).json({
-//             message: 'User registered successfully',
-//             user: { user_id: newUser.user_id, username: newUser.username, email: newUser.email }
-//         });
-//     } catch (error) {
-//         console.error('Error registering user:', error);
-//         res.status(500).json({ message: 'Error registering user', error });
-//     }
-// };
+const { verifyGoogleToken } = require('../utils/auth');
 
 // Login a user (using OAuth, no password)
 const loginUser = async (req, res) => {
   try {
-    const { accessToken, email } = req.body; // Only email is required for login
+    const { accessToken } = req.body; // Only accessToken is required, no email or password needed
 
-    const user = await verifyGoogleToken(accessToken)
-    console.log(user);
+    const oauthUser = await verifyGoogleToken(accessToken);
 
     // Check if email is provided
-    if (!email) {
-      return res.status(400).json({ message: 'Email is required' });
+    if (!oauthUser) {
+      return res.status(400).json({ message: 'Failed to verify Google User' });
     }
 
+    const email = oauthUser.email;
+
     // Find user by email
-    user = await User.findOne({ where: { email } });
+    let user = await User.findOne({ where: { email } });
     if (!user) {
       user = await User.create({
         email,
@@ -70,7 +27,7 @@ const loginUser = async (req, res) => {
 
     // Generate a JWT token on successful login (no password check needed)
     const token = jwt.sign(
-      { user_id: user.user_id, email: user.email },
+      { user_id: user.dataValues.user_id, email: user.dataValues.email },
       process.env.JWT_SECRET,
       { expiresIn: '1h' }
     );
