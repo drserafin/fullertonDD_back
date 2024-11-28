@@ -19,7 +19,7 @@ app.use('/api', routes); // This allows access to all routes prefixed with /api
 
 // Root route
 app.get('/', (req, res) => { 
-    res.send('Hello, World! My name is Kevin Serafin');
+    res.send('Hello, World! This is the backend for our CSPC 362 project');
 });
 
 // API root route
