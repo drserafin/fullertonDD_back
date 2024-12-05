@@ -19,7 +19,7 @@ const createProduct = async (req, res) => {
     console.log('Converted Request body:', data); // Log to check contents
   
     try {
-      const { name, description, price, category, stock_quantity, available } = data;
+      const { name, description, price, category_name, stock_quantity, available } = data;
   
       // Check if images were uploaded
       if (!data.images || data.images.length === 0) {
@@ -31,7 +31,7 @@ const createProduct = async (req, res) => {
         name,
         description,
         price,
-        category,
+        category_name,
         stock_quantity,
         available,
         image_url: data.images, // Store all image URLs in the database
@@ -48,14 +48,14 @@ const createProduct = async (req, res) => {
 // Function to search products with query parameters
 const searchProducts = async (req, res) => {
     try {
-        const { name, category, minPrice, maxPrice } = req.query;
+        const { name, category_name, minPrice, maxPrice } = req.query;
 
         let searchConditions = {};
         if (name) {
             searchConditions.name = { [Op.iLike]: `%${name}%` };  // Case-insensitive search
         }
-        if (category) {
-            searchConditions.category = category;
+        if (category_name) {
+            searchConditions.category_name = category_name;
         }
         if (minPrice && maxPrice) {
             searchConditions.price = { [Op.between]: [minPrice, maxPrice] };
@@ -184,7 +184,7 @@ const deleteProductById = async (req, res) => {
 
 const updateProduct = async (req, res) => {
     const { id } = req.params;  
-    const { name, description, price, category, stock_quantity, available, imageUrls } = req.body;  
+    const { name, description, price, category_name, stock_quantity, available, imageUrls } = req.body;  
 
     console.log('Updating product with ID:', id);
     console.log('Incoming data:', req.body);
@@ -199,7 +199,7 @@ const updateProduct = async (req, res) => {
         if (name) product.name = name;  
         if (description) product.description = description;  
         if (price) product.price = price;  
-        if (category) product.category = category;  
+        if (category_name) product.category_name = category_name;  
         if (stock_quantity !== undefined) product.stock_quantity = stock_quantity;  
         if (available !== undefined) product.available = available;  
 
