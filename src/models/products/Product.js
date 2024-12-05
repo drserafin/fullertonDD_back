@@ -20,6 +20,7 @@ const Product = sequelize.define('Product', {
   },
   category_name: {
     type: DataTypes.STRING(100), // You can keep the category column or remove it if you want to rely entirely on the `ProdCategory` association
+    allowNull: false,
   },
   stock_quantity: {
     type: DataTypes.INTEGER,
