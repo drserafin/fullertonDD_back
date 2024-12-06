@@ -9,12 +9,17 @@ const Cart = sequelize.define('Cart', {
   },
   user_id: {
     type: DataTypes.INTEGER,
-    allowNull: true
+    references: {
+      model: 'users',  // Reference to the 'users' table
+      key: 'user_id'   // Column in the 'users' table
+    },
+    onDelete: 'CASCADE'  // If a user is deleted, their cart is deleted as well
   }
 }, {
   timestamps: true,
   createdAt: 'created_at',
   updatedAt: 'updated_at'
 });
+
 
 module.exports = Cart;

@@ -19,7 +19,7 @@ const Product = sequelize.define('Product', {
     allowNull: false,
   },
   category_name: {
-    type: DataTypes.STRING(100), // You can keep the category column or remove it if you want to rely entirely on the `ProdCategory` association
+    type: DataTypes.STRING(100), 
    
   },
   stock_quantity: {
@@ -27,7 +27,7 @@ const Product = sequelize.define('Product', {
     allowNull: false,
   },
   image_url: {
-    type: DataTypes.ARRAY(DataTypes.TEXT), // For multiple image URLs
+    type: DataTypes.ARRAY(DataTypes.TEXT), 
     allowNull: false,
   },
   available: {

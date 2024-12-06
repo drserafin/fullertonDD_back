@@ -2,7 +2,7 @@ const { CartItem, Cart, Product } = require('../models');
 
 // Add product to the cart
 async function addItemToCart(req, res) {
-  const cartId = req.cartId;  // Get cartId from cookie/session
+  const cartId = req.cartId;  // Get cartId from session or cookie
   const { productId, quantity } = req.body;  // Get productId and quantity from the request body
   
   try {
@@ -10,8 +10,8 @@ async function addItemToCart(req, res) {
     let cart = await Cart.findOne({ where: { cart_id: cartId } });
 
     if (!cart) {
-      // If no cart exists, create a new cart
-      cart = await Cart.create({ cart_id: cartId });
+      // If no cart exists, create a new cart associated with the user
+      cart = await Cart.create({ user_id: req.userId });  // Ensure cart is associated with logged-in user
     }
 
     // Find the product
@@ -19,9 +19,6 @@ async function addItemToCart(req, res) {
     if (!product) {
       return res.status(404).json({ message: 'Product not found' });
     }
-
-    // Price is fetched from the Product model
-    const price = product.price;  // Get the price of the product
 
     // Check if the product is already in the cart
     const existingItem = await CartItem.findOne({
@@ -33,12 +30,12 @@ async function addItemToCart(req, res) {
       existingItem.quantity += quantity;
       await existingItem.save();
     } else {
-      // Otherwise, add a new item to the cart with price
+      // Otherwise, add a new item to the cart
       await CartItem.create({
         cart_id: cart.cart_id,
         product_id: product.id,
         quantity: quantity,
-        price: price  // Store the price of the product at the time of adding it to the cart
+        price: product.price  // Store the price of the product at the time of adding it to the cart
       });
     }
 
@@ -52,9 +49,11 @@ async function addItemToCart(req, res) {
 // Remove product from the cart
 const removeItemFromCart = async (req, res) => {
   try {
-    const { itemId } = req.params;
+    const { cartId, productId } = req.params;
 
-    const deleted = await CartItem.destroy({ where: { id: itemId } });
+    const deleted = await CartItem.destroy({
+      where: { cart_id: cartId, product_id: productId }
+    });
 
     if (!deleted) {
       return res.status(404).json({ message: 'Item not found' });
@@ -69,11 +68,13 @@ const removeItemFromCart = async (req, res) => {
 // Update product quantity in the cart
 const updateItemQuantity = async (req, res) => {
   try {
-    const { itemId } = req.params;
+    const { cartId, productId } = req.params;
     const { quantity } = req.body;
 
-    // Find the cart item by ID
-    const cartItem = await CartItem.findByPk(itemId);
+    // Find the cart item by cartId and productId
+    const cartItem = await CartItem.findOne({
+      where: { cart_id: cartId, product_id: productId }
+    });
     if (!cartItem) {
       return res.status(404).json({ message: 'Item not found in cart' });
     }

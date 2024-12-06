@@ -43,32 +43,31 @@ jobs:
       - name: Run Tests
         run: npm test
 
-      deploy-to-s3:
-      name: Upload README to S3
-      runs-on: ubuntu-latest
-      needs: lint-test
-      env:
-        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        AWS_DEFAULT_REGION: ${{ secrets.AWS_REGION }}
-        S3_BUCKET_NAME: ${{ secrets.PROFESSOR_S3_BUCKET_NAME }}  # Reference the secret for professor's S3 bucket
-      steps:
-        - name: Checkout Code
-          uses: actions/checkout@v2
+  deploy-to-s3:
+    name: Upload README to S3
+    runs-on: ubuntu-latest
+    needs: lint-test
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_DEFAULT_REGION: ${{ secrets.AWS_REGION }}
+      S3_BUCKET_NAME: ${{ secrets.PROFESSOR_S3_BUCKET_NAME }}  # Reference the secret for professor's S3 bucket
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
 
-        - name: Install AWS CLI
-          run: sudo apt-get install awscli  # This installs the AWS CLI
+      - name: Install AWS CLI
+        run: sudo apt-get install awscli  # This installs the AWS CLI
 
-        - name: Upload README to S3
-          run: |
-            PROJECT_DESCRIPTION="BACKEND for Fullerton Deal Depot Project Group #2"
-            TIMESTAMP=$(date +%Y%m%d%H%M%S)  # Generates a unique timestamp
-            # Replace spaces with underscores and # with underscores for a valid filename
-            UNIQUE_README_NAME="README-${PROJECT_DESCRIPTION// /_}"
-            UNIQUE_README_NAME="${UNIQUE_README_NAME//\#/}"  # Remove the # symbol
-            UNIQUE_README_NAME="${UNIQUE_README_NAME}-${TIMESTAMP}.md"  # Append timestamp
-            aws s3 cp README.md s3://$S3_BUCKET_NAME/$UNIQUE_README_NAME  # Uploads README to the professor's S3 bucket
-
+      - name: Upload README to S3
+        run: |
+          PROJECT_DESCRIPTION="BACKEND for Fullerton Deal Depot Project Group #2"
+          TIMESTAMP=$(date +%Y%m%d%H%M%S)  # Generates a unique timestamp
+          # Replace spaces with underscores and # with underscores for a valid filename
+          UNIQUE_README_NAME="README-${PROJECT_DESCRIPTION// /_}"
+          UNIQUE_README_NAME="${UNIQUE_README_NAME//\#/}"  # Remove the # symbol
+          UNIQUE_README_NAME="${UNIQUE_README_NAME}-${TIMESTAMP}.md"  # Append timestamp
+          aws s3 cp README.md s3://$S3_BUCKET_NAME/$UNIQUE_README_NAME  # Uploads README to the professor's S3 bucket
 
   deploy-preview:
     name: Deploy to Vercel (Preview)
