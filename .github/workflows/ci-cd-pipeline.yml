@@ -63,7 +63,7 @@ jobs:
         run: |
           PROJECT_DESCRIPTION="BACKEND for Fullerton Deal Depot Project Group #2"
           TIMESTAMP=$(date +%Y%m%d%H%M%S)  # Generates a unique timestamp
-          UNIQUE_README_NAME="README-${PROJECT_DESCRIPTION}-${TIMESTAMP}.md"  # Combines description and timestamp
+          UNIQUE_README_NAME="README-${PROJECT_DESCRIPTION// /_}-${TIMESTAMP}.md"  # Replaces spaces with underscores for a valid filename
           aws s3 cp README.md s3://$S3_BUCKET_NAME/$UNIQUE_README_NAME  # Uploads README to the professor's S3 bucket
 
   deploy-preview:
