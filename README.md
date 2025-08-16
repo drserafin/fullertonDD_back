@@ -1,6 +1,23 @@
-## Backend for the Fullerton Deal Depot E-commerce Platform
+# Fullerton Deal Depot E-Commerce Platform
 
-This project provides the backend REST API for the Fullerton Deal Depot, a platform for handling product listings, user management, and order processing.
+### Screenshots
+
+![Dashboard Screenshot](https://github.com/user-attachments/assets/7862345b-b31a-4124-9d69-6d23cc79e63f)  
+*Dashboard showing product management and order overview*
+
+![Product Page Screenshot](https://github.com/user-attachments/assets/8c261967-41cc-4c67-918d-ca1b30d1d329)  
+*Product list with search and filter functionality*
+
+![Order Management Screenshot](https://github.com/user-attachments/assets/55035b3e-fba0-4725-b74e-e3df29984353)  
+*Order processing interface for managing customer orders*
+
+---
+
+### Overview
+
+The Fullerton Deal Depot API provides the backend for an e-commerce platform, handling product listings, user management, and order processing. The frontend is a React-based interface that allows customers to browse products and manage their cart.  
+
+**Frontend:** [Fullerton Deal Depot Frontend](http://github.com/tmbkoren/fullertonDD_front)
 
 ---
 
@@ -17,25 +34,25 @@ This project provides the backend REST API for the Fullerton Deal Depot, a platf
 
 ## Project Description
 
-The Fullerton Deal Depot API is a backend solution designed for an e-commerce platform. It allows clients to interact with the system to perform the following operations:
+The Fullerton Deal Depot API allows clients to:
 
-- Create, read, update, and delete (CRUD) products
-- Handle order processing
-- Authenticate and manage users
-- Browse products, search functionality
-- Manage stock availability after purchases
+- Create, read, update, and delete (CRUD) products  
+- Handle order processing and update stock availability  
+- Authenticate and manage users  
+- Browse products with search and filtering options  
 
-The API is built using **Node.js**, **Express.js**, and **PostgreSQL** and is deployed on **Vercel**.
+**Technologies:** Node.js, Express.js, PostgreSQL  
+**Deployment:** Vercel
 
 ---
 
 ## Features
 
-- **Product Management**: Add, edit, delete, and view product details.
-- **Order Processing**: Manages orders and updates stock after purchases.
-- **User Authentication**: Register, log in, and manage user accounts.
-- **Product Search**: Easily search for products via various filters.
-- **Error Handling & Validation**: Middleware for managing errors and validating user input.
+- **Product Management:** Add, edit, delete, and view product details  
+- **Order Processing:** Manage orders and update stock  
+- **User Authentication:** Register, login, and manage accounts  
+- **Product Search:** Filter products with multiple criteria  
+- **Error Handling & Validation:** Middleware ensures data integrity  
 
 ---
 
