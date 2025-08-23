@@ -1,18 +1,5 @@
 # Fullerton Deal Depot E-Commerce Platform
 
-### Screenshots
-
-![Dashboard Screenshot](https://github.com/user-attachments/assets/7862345b-b31a-4124-9d69-6d23cc79e63f)  
-*Dashboard showing product management and order overview*
-
-![Product Page Screenshot](https://github.com/user-attachments/assets/8c261967-41cc-4c67-918d-ca1b30d1d329)  
-*Product list with search and filter functionality*
-
-![Order Management Screenshot](https://github.com/user-attachments/assets/55035b3e-fba0-4725-b74e-e3df29984353)  
-*Order processing interface for managing customer orders*
-
----
-
 ### Overview
 
 The Fullerton Deal Depot API provides the backend for an e-commerce platform, handling product listings, user management, and order processing. The frontend is a React-based interface that allows customers to browse products and manage their cart.  
@@ -29,6 +16,7 @@ The Fullerton Deal Depot API provides the backend for an e-commerce platform, ha
 - [REST API Diagram Architecture](#rest-api-diagram-architecture)
 - [Known Issues](#known-issues)
 - [To-do Items](#to-do-items)
+- [Screenshots](#screenshots)
 
 ---
 
@@ -125,3 +113,16 @@ This will start the development server with hot-reloading enabled, and you can a
 -   Optimize product search and filtering features.
 -   Improve error handling for database transactions.
 -   Set up new routes for the new tables (Products, Orders, Users, etc.).
+
+### Screenshots
+
+![Dashboard Screenshot](https://github.com/user-attachments/assets/7862345b-b31a-4124-9d69-6d23cc79e63f)  
+*Dashboard showing product management and order overview*
+
+![Product Page Screenshot](https://github.com/user-attachments/assets/8c261967-41cc-4c67-918d-ca1b30d1d329)  
+*Product list with search and filter functionality*
+
+![Order Management Screenshot](https://github.com/user-attachments/assets/55035b3e-fba0-4725-b74e-e3df29984353)  
+*Order processing interface for managing customer orders*
+
+---
